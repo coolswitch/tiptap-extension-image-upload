@@ -53,3 +53,15 @@ export interface ImageUploaderPluginOptions {
   upload(file: File | string, id: string): Promise<string>;
 }
 ```
+
+## Commands
+
+```js
+<input type="file" @change="onFileInputChoose" />
+
+function onFileInputChoose({ target }) {
+  const file = target.files[0]
+  target.value = ''
+  editor.commands.uploadImage({ file })
+}
+```
