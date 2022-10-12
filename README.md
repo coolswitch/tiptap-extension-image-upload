@@ -2,6 +2,8 @@
 
 Image upload extension for tiptap, support image preview.
 
+[中文readme](./README.zh.md)
+
 ## Introduction
 
 Upload support:
@@ -11,7 +13,7 @@ Upload support:
 - Screenshot in the clipboard
 - Third party pictures in the clipboard (the image url will be read and converted to File)
 
-image preview（.image-placeholder）：
+Image preview（.image-placeholder）：
 
 - The base64 of the image is used as the preview by default
 
