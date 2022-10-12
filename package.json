@@ -1,0 +1,42 @@
+{
+  "name": "tiptap-extension-image-upload",
+  "author": "coolswitch",
+  "description": "Image upload extension for tiptap, support image preview（tiptap的图片上传扩展，支持图片预览或占位）",
+  "version": "0.1.0",
+  "homepage": "https://github.com/coolswitch/tiptap-extension-image-upload#readme",
+  "keywords": [
+    "tiptap",
+    "tiptap extension",
+    "tiptap extension upload",
+    "tiptap extension img",
+    "tiptap extension image"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=10"
+  },
+  "main": "src/index.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "husky": {
+    "hooks": {
+      "pre-commit": "tsdx lint"
+    }
+  },
+  "dependencies": {
+    "@tiptap/core": "^2.0.0-beta.193",
+    "@tiptap/vue-3": "^2.0.0-beta.195"
+  },
+  "devDependencies": {
+    "husky": "^7.0.4",
+    "tsdx": "^0.14.1",
+    "tslib": "^2.4.0",
+    "typescript": "^4.6.4"
+  },
+  "bugs": {
+    "url": "https://github.com/coolswitch/tiptap-extension-image-upload/issues"
+  },
+  "repository": "git+https://github.com/coolswitch/tiptap-extension-image-upload.git"
+}
