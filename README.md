@@ -9,7 +9,7 @@ Image upload extension for tiptap, support image preview.
 Upload support:
 
 - File type data upload (such as the image selected by input:file)
-- Drag and drop the uploaded file
+- Image drop handling
 - Screenshot in the clipboard
 - Third party pictures in the clipboard (the image url will be read and converted to File)
 
