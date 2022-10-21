@@ -197,12 +197,13 @@ export class ImageUploaderPlugin {
       return positions;
     };
 
-    if (typeof fileOrUrl === 'string') {
-      fileOrUrl = await webImg2File(fileOrUrl)
+    let file: string | File | null = fileOrUrl
+    if (typeof file === 'string') {
+      file = await webImg2File(file)
     }
 
-    const url = (await this.config
-      .upload(fileOrUrl, id)
+    const url = file && (await this.config
+      .upload(file, id)
       // tslint:disable-next-line:no-console
       .catch(console.warn)) as string | undefined;
 
@@ -218,7 +219,7 @@ export class ImageUploaderPlugin {
       const newNode = this.view.state.schema.nodes.image.create({
         ...node.attrs,
         width: node.attrs.width,
-        src: url
+        src: url || 'web img err'
       })
       tr.replaceWith(pos, pos + 1, newNode)
     });
@@ -233,26 +234,29 @@ export class ImageUploaderPlugin {
 }
 
 
-function webImg2File(imgUrl: string): Promise<File> {
-  function imgToBase64(url: string, cb: (base64: string) => void) {
+function webImg2File(imgUrl: string): Promise<File | null> {
+  function imgToBase64(url: string): Promise<string> {
     let canvas = document.createElement('canvas'),
       ctx = canvas.getContext('2d'),
       img = new Image;
 
     img.crossOrigin = 'Anonymous';
-    img.onload = function () {
-      canvas.height = img.height;
-      canvas.width = img.width;
-      ctx?.drawImage(img, 0, 0);
-      var dataURL = canvas.toDataURL('image/png');
-      cb && cb(dataURL);
-      // @ts-ignore
-      canvas = null;
-    };
     img.src = url;
+    return new Promise((resolve, reject) => {
+      img.onload = function () {
+        canvas.height = img.height;
+        canvas.width = img.width;
+        ctx?.drawImage(img, 0, 0);
+        var dataURL = canvas.toDataURL('image/png');
+        resolve(dataURL);
+        // @ts-ignore
+        canvas = null;
+      };
+      img.onerror = reject
+    })
   }
 
-  function base64toFile(base: string, filename: string) {
+  function base64toFile(base: string, filename: string): File {
     var arr = base.split(',');
     // @ts-ignore
     var mime = arr[0].match(/:(.*?);/)[1];
@@ -267,10 +271,10 @@ function webImg2File(imgUrl: string): Promise<File> {
     return new File([u8arr], `${filename}.${suffix}`, { type: mime });
   }
 
-  return new Promise((resolve) => {
-    imgToBase64(imgUrl, base => {
-      resolve(base64toFile(base, '网络图片'))
-    })
+  return imgToBase64(imgUrl).then(base => {
+    return base64toFile(base, '网络图片')
+  }).catch(() => {
+    return null
   })
 }
 
