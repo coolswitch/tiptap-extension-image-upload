@@ -1,6 +1,6 @@
 import { Extension } from '@tiptap/core'
 // import { imageUploader } from 'prosemirror-image-uploader'
-import { imageUploader, getPluginInstances, getFileCache } from './imageUploader'
+import { imageUploader, getFileCache } from './imageUploader'
 
 export interface ImageUploaderPluginOptions {
 

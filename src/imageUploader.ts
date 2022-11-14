@@ -285,9 +285,9 @@ function webImg2File(imgUrl: string): Promise<File | null> {
   })
 }
 
-export function getPluginInstances() {
-  return plugin
-}
+// export function getPluginInstances() {
+//   return plugin
+// }
 export function getFileCache(key: string) {
   return fileCache[key]
 }
