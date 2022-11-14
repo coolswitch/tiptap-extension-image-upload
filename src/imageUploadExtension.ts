@@ -1,6 +1,6 @@
 import { Extension } from '@tiptap/core'
 // import { imageUploader } from 'prosemirror-image-uploader'
-import { imageUploader, getPluginInstances } from './imageUploader'
+import { imageUploader, getFileCache } from './imageUploader'
 
 export interface ImageUploaderPluginOptions {
 
@@ -33,14 +33,14 @@ export const ImageUploadExtension = Extension.create<ImageUploaderPluginOptions>
 
   addCommands() {
     return {
-      uploadImage: options => ({ commands }) => {
-        // commands.focus
-        // var xx = new ClipboardItem({ 'image/png': options.file as Blob })
-        // navigator.clipboard.write([xx])
-        // navigator.clipboard.read()
-        const plugin = getPluginInstances()
-        plugin?.beforeUpload(options.file, -1)
+      uploadImage: options => ({ tr }) => {
+        // const plugin = getPluginInstances()
+        // plugin?.beforeUpload(options.file, -1)
+        tr.setMeta('uploadImages', options.file);
         return true
+      },
+      getFileCache: (key: string) => () => {
+        return getFileCache(key)
       }
     }
   },
