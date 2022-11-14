@@ -5,6 +5,7 @@ import { EditorView } from 'prosemirror-view';
 import type { ImageUploaderPluginOptions } from './imageUploadExtension'
 
 let plugin: ImageUploaderPlugin | null = null
+let fileCache: { [key: string]: File | string } = {}
 
 export function imageUploader(options: ImageUploaderPluginOptions) {
   plugin = new ImageUploaderPlugin(options);
@@ -55,13 +56,12 @@ export function imageUploader(options: ImageUploaderPluginOptions) {
               : Array.from(filesOrUrls); /// Probably a FileList or an array of files/urls
 
           // give some time for editor, otherwise history plugin forgets history
-          setTimeout(
-            () =>
-              arr.forEach((item, i) =>
-                plugin?.beforeUpload(item, newState.selection.from + i)
-              ),
-            10
-          );
+          setTimeout(() => {
+            arr.forEach((item, i) =>
+              plugin?.beforeUpload(item, newState.selection.from + i)
+            )
+            tr.setMeta('uploadImages', undefined);
+          }, 10);
         }
 
         return dummy;
@@ -96,6 +96,7 @@ export class ImageUploaderPlugin {
     return true;
   }
 
+  // 网页
   public transformPasted(slice: Slice) {
     const imageNodes: Array<{ url: string; id: string }> = [];
 
@@ -139,6 +140,7 @@ export class ImageUploaderPlugin {
     );
   }
 
+  // 截图
   public handlePaste(event: ClipboardEvent) {
     const items = Array.from(event.clipboardData?.items || []);
 
@@ -170,7 +172,8 @@ export class ImageUploaderPlugin {
 
     /// insert image node.
     const node = this.newUploadingImageNode({ src: fileOrUrl });
-    this.view.dispatch(tr.replaceWith(at - 1, at - 1, node));
+    tr.replaceWith(at, at, node)
+    this.view.dispatch(tr);
 
     /// upload image for above node
     this.uploadImageForId(fileOrUrl, node.attrs.uploadId);
@@ -178,10 +181,12 @@ export class ImageUploaderPlugin {
 
   public newUploadingImageNode(attrs?: any): Node {
     // const empty_baseb4 = "data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'/%3E\n";
+    const uploadId = this.config.id()
+    fileCache[uploadId] = attrs.src
     return this.view.state.schema.nodes.imagePlaceholder.create({
       ...attrs,
-      src: attrs.src,
-      uploadId: this.config.id()
+      src: '',//attrs.src,
+      uploadId
     })
   }
 
@@ -213,7 +218,8 @@ export class ImageUploaderPlugin {
     }
 
     /// disallow user from undoing back to 'uploading' state.
-    let tr = this.view.state.tr.setMeta('addToHistory', false);
+    // let tr = this.view.state.tr.setMeta('addToHistory', false);
+    let tr = this.view.state.tr;
 
     imageNodes.forEach(({ node, pos }) => {
       const newNode = this.view.state.schema.nodes.image.create({
@@ -225,6 +231,7 @@ export class ImageUploaderPlugin {
     });
 
     this.view.dispatch(tr);
+    fileCache[id] = ''
   }
 
   public setView(view: EditorView): this {
@@ -280,4 +287,7 @@ function webImg2File(imgUrl: string): Promise<File | null> {
 
 export function getPluginInstances() {
   return plugin
+}
+export function getFileCache(key: string) {
+  return fileCache[key]
 }

@@ -31,12 +31,6 @@ export const ImagePlaceholder = Node.create<ImagePlaceholderOptions>({
 
   addAttributes() {
     return {
-      file: {
-        default: null
-      },
-      src: {
-        default: null
-      },
       uploadId: {
         default: ''
       },
@@ -51,7 +45,7 @@ export const ImagePlaceholder = Node.create<ImagePlaceholderOptions>({
   },
 
   renderHTML() {
-    return ['p']
+    return ['div']
   },
 
   addNodeView() {
@@ -64,9 +58,9 @@ export const ImagePlaceholder = Node.create<ImagePlaceholderOptions>({
         find: inputRegex,
         type: this.type,
         getAttributes: (match) => {
-          const [, , file, src, uploadId] = match
+          const [, , uploadId] = match
 
-          return { file, src, uploadId }
+          return { uploadId }
         }
       })
     ]
