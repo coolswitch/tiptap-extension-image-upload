@@ -248,6 +248,7 @@ function webImg2File(imgUrl: string): Promise<File | null> {
       img = new Image;
 
     img.crossOrigin = 'Anonymous';
+    img.setAttribute('referrerpolicy', 'no-referrer')
     img.src = url;
     return new Promise((resolve, reject) => {
       img.onload = function () {

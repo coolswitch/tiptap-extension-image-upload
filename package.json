@@ -2,7 +2,7 @@
   "name": "tiptap-extension-image-upload",
   "author": "coolswitch",
   "description": "Image upload extension for tiptap, support image preview（tiptap的图片上传扩展，支持图片预览或占位）",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "homepage": "https://github.com/coolswitch/tiptap-extension-image-upload#readme",
   "keywords": [
     "tiptap",

@@ -1,7 +1,14 @@
 <template>
   <NodeViewWrapper class="image-placeholder" :class="{ inline: options.inline, uploading: !!base64 }">
     <div v-if="isImgErr" class="iconfont icon-tupian"></div>
-    <img v-else-if="base64" :src="base64" @error="isImgErr = true" @load="onLoad" />
+    <img
+      v-else-if="base64"
+      :src="base64"
+      @error="isImgErr = true"
+      @load="onLoad"
+      crossOrigin="Anonymous"
+      referrerpolicy="no-referrer"
+    />
   </NodeViewWrapper>
 </template>
 
