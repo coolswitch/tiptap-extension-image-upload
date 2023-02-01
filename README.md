@@ -2,7 +2,7 @@
 
 Image upload extension for tiptap, support image preview.
 
-[中文readme](./README.zh.md)
+[中文 readme](./README.zh.md)
 
 ## Introduction
 
@@ -35,6 +35,7 @@ import { ImageUploadExtension, ImagePlaceholder } from 'tiptap-extension-image-u
         // your upload ajax
         return Promise.resolve('https://avatars.githubusercontent.com/u/112541088')
       },
+      ignoreDomains: ['www.xxx.com']
     }),
     ImagePlaceholder.configure({
       inline: false
@@ -46,12 +47,14 @@ import { ImageUploadExtension, ImagePlaceholder } from 'tiptap-extension-image-u
 ```ts
 export interface ImageUploaderPluginOptions {
   /** Image types allowed to upload */
-  acceptMimes: string[];
+  acceptMimes: string[]
   /**
    * Image File upload function
    * @param {File} file - File waiting to be uploaded
    * @param {string} id - Automatically generated unique key
    */
-  upload(file: File | string, id: string): Promise<string>;
+  upload(file: File | string, id: string): Promise<string>
+  /** Do not upload if the src domain is in this array  */
+  ignoreDomains: string[]
 }
 ```

@@ -105,15 +105,15 @@ export class ImageUploaderPlugin {
       let newChild = child;
 
       /// if the node itself is image
-      if (child.type.name === 'image') {
+      if (child.type.name === 'image' && !this.isOurOwnPic(child.attrs)) {
         newChild = this.newUploadingImageNode(child.attrs);
         imageNodes.push({
           id: newChild.attrs.uploadId,
-          url: child.attrs.src
+          url: child.attrs.src || child.attrs['data-src']
         });
       } else {
         child.descendants((node, pos) => {
-          if (node.type.name === 'image') {
+          if (node.type.name === 'image' && !this.isOurOwnPic(node.attrs)) {
             const imageNode = this.newUploadingImageNode(node.attrs);
             newChild = newChild.replace(
               pos,
@@ -122,7 +122,7 @@ export class ImageUploaderPlugin {
             );
             imageNodes.push({
               id: imageNode.attrs.uploadId,
-              url: node.attrs.src
+              url: node.attrs.src || node.attrs['data-src']
             });
           }
         });
@@ -182,7 +182,7 @@ export class ImageUploaderPlugin {
   public newUploadingImageNode(attrs?: any): Node {
     // const empty_baseb4 = "data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'/%3E\n";
     const uploadId = this.config.id()
-    fileCache[uploadId] = attrs.src
+    fileCache[uploadId] = attrs.src || attrs['data-src']
     return this.view.state.schema.nodes.imagePlaceholder.create({
       ...attrs,
       src: '',//attrs.src,
@@ -225,7 +225,7 @@ export class ImageUploaderPlugin {
       const newNode = this.view.state.schema.nodes.image.create({
         ...node.attrs,
         width: node.attrs.width,
-        src: url || 'web img err'
+        src: url || ''
       })
       tr.replaceWith(pos, pos + 1, newNode)
     });
@@ -237,6 +237,11 @@ export class ImageUploaderPlugin {
   public setView(view: EditorView): this {
     this.view = view;
     return this;
+  }
+
+  private isOurOwnPic(attrs: { src?: string, ['data-src']?: string }): boolean {
+    const src = attrs.src || attrs['data-src'] || ''
+    return (this.config.ignoreDomains || []).some((domain) => src.includes(domain))
   }
 }
 
@@ -285,6 +290,7 @@ function webImg2File(imgUrl: string): Promise<File | null> {
     return null
   })
 }
+
 
 // export function getPluginInstances() {
 //   return plugin

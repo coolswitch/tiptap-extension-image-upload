@@ -3,12 +3,13 @@ import { Extension } from '@tiptap/core'
 import { imageUploader, getFileCache } from './imageUploader'
 
 export interface ImageUploaderPluginOptions {
+  acceptMimes: string[]
 
-  acceptMimes: string[];
+  upload(file: File | string, id: string): Promise<string>
 
-  upload(file: File | string, id: string): Promise<string>;
+  id(): string
 
-  id(): string;
+  ignoreDomains: string[]
 }
 
 declare module '@tiptap/core' {
@@ -25,9 +26,13 @@ export const ImageUploadExtension = Extension.create<ImageUploaderPluginOptions>
 
   addOptions() {
     return {
-      id: () => Math.random().toString(36).substring(7),
+      id: () =>
+        Math.random()
+          .toString(36)
+          .substring(7),
       acceptMimes: ['image/jpeg', 'image/gif', 'image/png', 'image/jpg'],
       upload: () => Promise.reject('【ImageUploadExtension】参数 upload 为必填项'),
+      ignoreDomains: [],
     }
   },
 
@@ -36,19 +41,17 @@ export const ImageUploadExtension = Extension.create<ImageUploaderPluginOptions>
       uploadImage: options => ({ tr }) => {
         // const plugin = getPluginInstances()
         // plugin?.beforeUpload(options.file, -1)
-        tr.setMeta('uploadImages', options.file);
+        tr.setMeta('uploadImages', options.file)
         return true
       },
       getFileCache: (key: string) => () => {
         return getFileCache(key)
-      }
+      },
     }
   },
 
   addProseMirrorPlugins() {
     const options = this.options
-    return [
-      imageUploader(options)
-    ]
-  }
-}) 
+    return [imageUploader(options)]
+  },
+})
